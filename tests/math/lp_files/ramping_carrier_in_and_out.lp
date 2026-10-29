@@ -8,17 +8,17 @@ s.t.
 
 c_u_constraints(ramping_up)(a__test_conversion_plus__electricity__2005_01_01_00_00)_:
 +1.0 variables(flow_out)(a__test_conversion_plus__electricity__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__electricity)
+-0.25 variables(flow_cap)(a__test_conversion_plus__electricity)
 <= 0.0
 
 c_u_constraints(ramping_up)(a__test_conversion_plus__heat__2005_01_01_00_00)_:
 +1.0 variables(flow_out)(a__test_conversion_plus__heat__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__heat)
+-0.25 variables(flow_cap)(a__test_conversion_plus__heat)
 <= 0.0
 
 c_u_constraints(ramping_up)(a__test_conversion_plus__gas__2005_01_01_00_00)_:
 +1.0 variables(flow_in)(a__test_conversion_plus__gas__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__gas)
+-0.25 variables(flow_cap)(a__test_conversion_plus__gas)
 <= 0.0
 
 c_u_constraints(ramping_up)(a__test_conversion_plus__electricity__2005_01_01_01_00)_:
@@ -41,17 +41,17 @@ c_u_constraints(ramping_up)(a__test_conversion_plus__gas__2005_01_01_01_00)_:
 
 c_u_constraints(ramping_down)(a__test_conversion_plus__electricity__2005_01_01_00_00)_:
 -1.0 variables(flow_out)(a__test_conversion_plus__electricity__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__electricity)
+-0.25 variables(flow_cap)(a__test_conversion_plus__electricity)
 <= 0.0
 
 c_u_constraints(ramping_down)(a__test_conversion_plus__heat__2005_01_01_00_00)_:
 -1.0 variables(flow_out)(a__test_conversion_plus__heat__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__heat)
+-0.25 variables(flow_cap)(a__test_conversion_plus__heat)
 <= 0.0
 
 c_u_constraints(ramping_down)(a__test_conversion_plus__gas__2005_01_01_00_00)_:
 -1.0 variables(flow_in)(a__test_conversion_plus__gas__2005_01_01_00_00)
--0.5 variables(flow_cap)(a__test_conversion_plus__gas)
+-0.25 variables(flow_cap)(a__test_conversion_plus__gas)
 <= 0.0
 
 c_u_constraints(ramping_down)(a__test_conversion_plus__electricity__2005_01_01_01_00)_:

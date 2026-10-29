@@ -301,9 +301,10 @@ parameters:
     title: Ramping rate
     description: >-
       Limit the change of outflow / inflow / outflow - inflow (technology base class dependent)
-      between two consecutive timesteps to this fraction of the flow capacity per hour,
-      applied over the duration of the timestep.
-      Flows are taken as constant within a timestep.
+      between two consecutive timesteps to this fraction of the flow capacity per hour.
+      The flow of a timestep is its average level, placed at the midpoint of the timestep,
+      and the level changes linearly between midpoints.
+      So the rate applies over the time between the midpoints of the two timesteps.
     unit: $\frac{1}{\text{hour}}$
 
   lifetime:
@@ -859,21 +860,25 @@ constraints:
       Set the upper bound on a technology's ability to ramp outflow up
       compared to the previous timestep.
       The ramping rate is a fraction of the flow capacity per hour,
-      applied over the duration of the timestep.
-      In the first timestep, the flow before the start of the model is taken as zero.
+      applied over the time between the midpoints of the two timesteps.
+      In the first timestep, the flow is taken as zero at the start of the model,
+      so the rate applies over the first half of the timestep.
       With time clustering,
       the first timestep of a cluster is compared with the last timestep of the same cluster.
     foreach: [nodes, techs, carriers, timesteps]
     where: "(carrier_in OR carrier_out) AND flow_ramping"
     equations:
       - where: timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: $flow <= flow_ramping * flow_cap * timestep_resolution
+        expression: $flow <= flow_ramping * flow_cap * timestep_resolution / 2
       - where: NOT timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: $flow - roll($flow, timesteps=1) <= flow_ramping * flow_cap * timestep_resolution
+        expression: >-
+          $flow - roll($flow, timesteps=1) <=
+          flow_ramping * flow_cap * (timestep_resolution + roll(timestep_resolution, timesteps=1)) / 2
       - where: cluster_first_timestep==True
         expression: >-
           $flow - select_from_lookup_arrays($flow, timesteps=lookup_cluster_last_timestep) <=
-          flow_ramping * flow_cap * timestep_resolution
+          flow_ramping * flow_cap *
+          (timestep_resolution + select_from_lookup_arrays(timestep_resolution, timesteps=lookup_cluster_last_timestep)) / 2
     sub_expressions:
       flow: &ramping_flow
         - where: "carrier_out AND NOT carrier_in"
@@ -888,20 +893,24 @@ constraints:
       Set the upper bound on a technology's ability to ramp outflow down
       compared to the previous timestep.
       The ramping rate is a fraction of the flow capacity per hour,
-      applied over the duration of the timestep.
-      In the first timestep, the flow before the start of the model is taken as zero.
+      applied over the time between the midpoints of the two timesteps.
+      In the first timestep, the flow is taken as zero at the start of the model,
+      so the rate applies over the first half of the timestep.
       With time clustering,
       the first timestep of a cluster is compared with the last timestep of the same cluster.
     foreach: [nodes, techs, carriers, timesteps]
     where: "(carrier_in OR carrier_out) AND flow_ramping"
     equations:
       - where: timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: -1 * flow_ramping * flow_cap * timestep_resolution <= $flow
+        expression: -1 * flow_ramping * flow_cap * timestep_resolution / 2 <= $flow
       - where: NOT timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: -1 * flow_ramping * flow_cap * timestep_resolution <= $flow - roll($flow, timesteps=1)
+        expression: >-
+          -1 * flow_ramping * flow_cap * (timestep_resolution + roll(timestep_resolution, timesteps=1)) / 2 <=
+          $flow - roll($flow, timesteps=1)
       - where: cluster_first_timestep==True
         expression: >-
-          -1 * flow_ramping * flow_cap * timestep_resolution <=
+          -1 * flow_ramping * flow_cap *
+          (timestep_resolution + select_from_lookup_arrays(timestep_resolution, timesteps=lookup_cluster_last_timestep)) / 2 <=
           $flow - select_from_lookup_arrays($flow, timesteps=lookup_cluster_last_timestep)
     sub_expressions:
       flow: *ramping_flow

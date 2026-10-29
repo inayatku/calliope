@@ -7,7 +7,7 @@ objectives(dummy_obj)(0):
 s.t.
 
 c_u_constraints(ramping_down)(a__test_supply_elec__electricity__2005_01_01_00_00)_:
--1.2000000000000002 variables(flow_cap)(a__test_supply_elec__electricity)
+-0.6000000000000001 variables(flow_cap)(a__test_supply_elec__electricity)
 -0.041666666666666664 variables(flow_out)(a__test_supply_elec__electricity__2005_01_01_00_00)
 <= 0.0
 
