@@ -869,18 +869,18 @@ constraints:
     where: "(carrier_in OR carrier_out) AND flow_ramping"
     equations:
       - where: timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: $flow <= flow_ramping * flow_cap * timestep_resolution / 2
+        expression: $average_power <= flow_ramping * flow_cap * timestep_resolution / 2
       - where: NOT timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
         expression: >-
-          $flow - roll($flow, timesteps=1) <=
+          $average_power - roll($average_power, timesteps=1) <=
           flow_ramping * flow_cap * (timestep_resolution + roll(timestep_resolution, timesteps=1)) / 2
       - where: cluster_first_timestep==True
         expression: >-
-          $flow - select_from_lookup_arrays($flow, timesteps=lookup_cluster_last_timestep) <=
+          $average_power - select_from_lookup_arrays($average_power, timesteps=lookup_cluster_last_timestep) <=
           flow_ramping * flow_cap *
           (timestep_resolution + select_from_lookup_arrays(timestep_resolution, timesteps=lookup_cluster_last_timestep)) / 2
     sub_expressions:
-      flow: &ramping_flow
+      average_power: &ramping_average_power
         - where: "carrier_out AND NOT carrier_in"
           expression: flow_out / timestep_resolution
         - where: "carrier_in AND NOT carrier_out"
@@ -902,18 +902,18 @@ constraints:
     where: "(carrier_in OR carrier_out) AND flow_ramping"
     equations:
       - where: timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
-        expression: -1 * flow_ramping * flow_cap * timestep_resolution / 2 <= $flow
+        expression: -1 * flow_ramping * flow_cap * timestep_resolution / 2 <= $average_power
       - where: NOT timesteps==get_val_at_index(timesteps=0) AND NOT cluster_first_timestep==True
         expression: >-
           -1 * flow_ramping * flow_cap * (timestep_resolution + roll(timestep_resolution, timesteps=1)) / 2 <=
-          $flow - roll($flow, timesteps=1)
+          $average_power - roll($average_power, timesteps=1)
       - where: cluster_first_timestep==True
         expression: >-
           -1 * flow_ramping * flow_cap *
           (timestep_resolution + select_from_lookup_arrays(timestep_resolution, timesteps=lookup_cluster_last_timestep)) / 2 <=
-          $flow - select_from_lookup_arrays($flow, timesteps=lookup_cluster_last_timestep)
+          $average_power - select_from_lookup_arrays($average_power, timesteps=lookup_cluster_last_timestep)
     sub_expressions:
-      flow: *ramping_flow
+      average_power: *ramping_average_power
 
 variables:
   flow_cap:
