@@ -15,6 +15,10 @@ With time clustering, the first timestep of a cluster is now compared with the l
 The first timestep of a model without clustering is now also limited, with the flow taken as zero at the start of the model, so the rate applies over the first half of the timestep.
 This changes the results of the national-scale example model, where `ccgt` can now produce at most 40% of its capacity in the first hour.
 
+|new| `ramping_up_after_low_output` and `ramping_down_after_high_output` constraints, which bound the ramp after a timestep that carried little energy (or nearly its full energy) and so cannot have ended at a high (or low) level.
+They use a reference period of one hour, so they are tighter than `ramping_up` and `ramping_down` only after timesteps longer than one hour, and the same after hourly timesteps.
+A new check raises an error if `flow_ramping` is used with timesteps shorter than one hour, as these constraints are not valid for them.
+
 ### Internal changes
 
 |fixed| Improved HiGHS backend: faster shadow price extraction; batched variable and constraint construction, leading to model build times on a similar order as the Gurobi backend
